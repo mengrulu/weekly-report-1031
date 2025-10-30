@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>研發一組部會週報 (10/31)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 設定字體為 Inter，用於更好的視覺效果 */
+        :root {
+            font-family: 'Inter', sans-serif;
+        }
+        /* 讓表格標頭看起來可點擊 */
+        .sortable-header {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .sortable-header:hover {
+            background-color: #e5e7eb; /* 淺灰色懸停效果 */
+        }
+        /* 進度條樣式 */
+        .progress-bar-bg {
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            transition: width 1s ease-out;
+            border-radius: 9999px;
+        }
+        
+        /* ------------------------------------- */
+        /* 【新增】Logo 強制大尺寸 CSS 類別 (320px x 320px) */
+        .logo-massive {
+            width: 320px !important; 
+            height: 320px !important; 
+        }
+        /* ------------------------------------- */
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#a855f7', /* 專案主題色：紫色 */
+                        'secondary-gray': '#f5f3ff', /* 淺紫色背景 */
+                        'project-red': '#ef4444',
+                        'project-green': '#10b981',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-secondary-gray min-h-screen flex flex-col">
+
+<header class="bg-white shadow-lg sticky top-0 z-10">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 relative flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+        
+        <div class="text-2xl font-extrabold text-primary-blue flex items-center">
+            
+            <div class="relative w-64 h-20 mr-2"> 
+                <img 
+                    src="./images/logo.png" 
+                    alt="研發一組 Logo" 
+                    class="absolute left-0 object-contain" 
+                    style="width: 320px; height: 240px; top: -80px; z-index: 10;" 
+                    onerror="this.onerror=null; this.src='https://placehold.co/320x240/ffcc00/000000?text=LOGO';"
+                >
+            </div>
+
+            研發一組部會週報 (10/31)
+        </div>
+        
+        <div class="flex flex-wrap justify-center space-x-2 sm:space-x-4">
+            <button onclick="navigateTo('home')" class="nav-btn bg-primary-blue text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-150 hover:bg-purple-700">概覽</button>
+            <button onclick="navigateTo('projects')" class="nav-btn text-gray-700 py-2 px-4 rounded-full transition duration-150 hover:bg-gray-100">專案進度</button>
+            <button onclick="navigateTo('competitors')" class="nav-btn text-gray-700 py-2 px-4 rounded-full transition duration-150 hover:bg-gray-100">競業分析</button>
+            <button onclick="navigateTo('conclusion')" class="nav-btn text-gray-700 py-2 px-4 rounded-full transition duration-150 hover:bg-gray-100">總結建議</button>
+        </div>
+    </nav>
+</header>
+
+    <main id="content-container" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+        </main>
+
+    <footer class="bg-primary-blue text-white p-4 mt-12">
+        <div class="max-w-7xl mx-auto text-center text-xs opacity-80">
+            iGS 研發一組部會報告原型。主講人: 呂孟儒 | 日期: 10/31
+        </div>
+    </footer>
+
+    <div id="message-box" class="fixed top-5 right-5 z-20 transition-all duration-500 ease-out transform translate-x-full opacity-0">
+        <div class="bg-green-600 text-white p-4 rounded-lg shadow-xl font-medium flex items-center space-x-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span id="message-text">訊息內容</span>
+        </div>
+    </div>
+
+    <script>
+        // --- 核心 JavaScript 邏輯 ---
+        const contentContainer = document.getElementById('content-container');
+        
+        // 專案圖片連結 (請確保這些圖片檔案在您的 'images' 資料夾中)
+        const hammerOfThunderImageUrl = './images/hammer.jpg';
+        // 戰神呂布圖片連結
+        const lvbuImageUrl = './images/lvbu.png'; 
+        
+        // 總結建議圖片 URL
+        const conclusionImageUrl = './images/mahjong.png'; 
+
+        // 專案數據 
+        const projectsData = [
+            {
+                name: '雷霆之錘',
+                progress: 20,
+                launchDate: '12/31 (三)',
+                details: ['初版資源上傳、研究規格', '規劃音樂音效外包項目'],
+                theme: '北歐神話/老虎機', // 雖然不再顯示，但保留數據結構
+                color: 'project-red',
+                imageUrl: hammerOfThunderImageUrl
+            },
+            {
+                name: '戰神呂布',
+                progress: 5,
+                launchDate: '2/11 (三)',
+                details: ['確認風格設定', '主場畫面拼板中'],
+                theme: '三國/老虎機', // 雖然不再顯示，但保留數據結構
+                color: 'project-green',
+                imageUrl: lvbuImageUrl
+            }
+        ];
+
+        // 競業分析數據
+        const competitorData = [
+            { rank: 1, vendor: 'PG Soft', fame: 5, penetration: 5, slot: 'Mahjong Ways 2', region: '全球',玩法: '消除乘倍、金牌轉百搭' },
+            { rank: 2, vendor: 'JILI Games', fame: 5, penetration: 4, slot: 'Super Ace', region: '東南亞(菲律賓、泰國)',玩法: '不詳' },
+            { rank: 3, vendor: 'JDB Gaming', fame: 4, penetration: 3.5, slot: 'Fortune Treasure', region: '亞洲',玩法: 'Hold&Spin、倍率遞增' },
+            { rank: 4, vendor: 'FA CHAI Gaming', fame: 4, penetration: 4, slot: 'Sugar Bang Bang 2', region: '亞洲、新興市場',玩法: '消除乘倍、金色+倍數轉百搭' },
+        ];
+        
+        let sortKey = 'rank';
+        let sortAsc = true; // 預設排序方向為升序
+
+        // 顯示訊息框
+        function showMessage(text, isError = false) {
+            const box = document.getElementById('message-box');
+            const icon = box.querySelector('svg');
+            document.getElementById('message-text').textContent = text;
+            
+            if (isError) {
+                box.children[0].classList.remove('bg-green-600');
+                box.children[0].classList.add('bg-red-600');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'; // Alert icon
+            } else {
+                box.children[0].classList.remove('bg-red-600');
+                box.children[0].classList.add('bg-green-600');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>'; // Check icon
+            }
+
+            // 顯示動畫：滑入
+            box.classList.remove('translate-x-full', 'opacity-0');
+            box.classList.add('translate-x-0', 'opacity-100');
+
+            // 隱藏動畫：4秒後滑出
+            setTimeout(() => {
+                box.classList.remove('translate-x-0', 'opacity-100');
+                box.classList.add('translate-x-full', 'opacity-0');
+            }, 4000);
+        }
+
+        // 產生星號或評級文字
+        function getRatingDisplay(value) {
+            if (typeof value === 'number') {
+                const fullStars = Math.floor(value);
+                const halfStar = (value % 1) >= 0.5 ? '½' : '';
+                const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                return '★'.repeat(fullStars) + halfStar + '☆'.repeat(emptyStars);
+            }
+            return value;
+        }
+
+        /**
+         * 產生 YouTube 嵌入式影片的 HTML 結構 (此函數已不再使用，但保留以防萬一)
+         */
+        function createVideoEmbedHTML(title, youtubeId) {
+            return `
+                <div class="mb-4 p-4 border rounded-xl bg-white shadow-sm">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm">${title}</h4>
+                    <div class="relative w-full overflow-hidden rounded-lg" style="padding-top: 56.25%;">
+                        <iframe 
+                            class="absolute top-0 left-0 w-full h-full" 
+                            src="https://www.youtube.com/embed/${youtubeId}?rel=0" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen
+                        ></iframe>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 頁面內容定義 ---
+
+        const pages = {
+            home: `
+                <div class="bg-white p-8 rounded-2xl shadow-2xl text-center mb-12">
+                    <h1 class="text-4xl sm:text-5xl font-extrabold text-primary-blue mb-4">研發一組部會週報</h1>
+                    <p class="text-xl text-gray-600 mb-8">日期: 10/31 | 主講人: 呂孟儒</p>
+                    <div class="space-y-4">
+                        <div class="text-2xl font-semibold text-gray-800">
+                            本週重點專案概覽:
+                        </div>
+                        ${projectsData.map(p => `
+                            <div class="p-4 bg-secondary-gray rounded-xl shadow-inner flex flex-col md:flex-row items-center justify-between text-left">
+                                <div class="w-full md:w-1/3 text-lg font-bold text-gray-800">${p.name}</div>
+                                <div class="w-full md:w-1/3 text-sm text-gray-600">上線日期: ${p.launchDate}</div>
+                                <div class="w-full md:w-1/3 mt-2 md:mt-0">
+                                    <div class="text-xs font-medium text-gray-700 mb-1">進度: ${p.progress}%</div>
+                                    <div class="progress-bar-bg h-2">
+                                        <div class="progress-bar h-full bg-${p.color}" style="width: ${p.progress}%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button onclick="navigateTo('projects')" class="mt-8 inline-block bg-primary-blue text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-purple-700 transition duration-300">
+                        查看專案詳細進度
+                    </button>
+                </div>
+            `,
+            projects: `
+                <h1 class="text-4xl font-bold text-gray-800 mb-8 border-b-4 border-primary-blue pb-3">專案進度細節</h1>
+                <div class="space-y-8">
+                    ${projectsData.map(p => {
+                        // 專案進度調整：根據要求，移除 (主題) 字樣
+                        const progressLabel = (p.name === '戰神呂布' ? '美術進度' : '整體進度');
+
+                        return `
+                            <div class="bg-white p-6 rounded-2xl shadow-xl border-t-8 border-${p.color}">
+                                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                                    <h2 class="text-3xl font-extrabold text-gray-900">${p.name}</h2>
+                                    <span class="text-lg font-semibold text-${p.color}">上線日期: ${p.launchDate}</span>
+                                </div>
+                                
+                                ${p.imageUrl ? `<div class="mb-6 overflow-hidden rounded-lg shadow-md"> 
+                                                     <img 
+                                                         src="${p.imageUrl}" 
+                                                         alt="${p.name} 遊戲畫面" 
+                                                         class="w-full h-auto object-cover"
+                                                         onerror="this.onerror=null; this.src='https://placehold.co/800x450/CCCCCC/333333?text=${p.name}+圖片載入失敗';"
+                                                     >
+                                                 </div>` : ''}
+
+                                <div class="text-sm font-medium text-gray-700 mb-2">${progressLabel}: ${p.progress}%</div>
+                                <div class="progress-bar-bg h-3 mb-6">
+                                    <div class="progress-bar h-full bg-${p.color}" style="width: ${p.progress}%;"></div>
+                                </div>
+
+                                <p class="text-xl font-semibold text-gray-800 mb-3">本週工作項目:</p>
+                                <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                                    ${p.details.map(d => `<li>${d}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `,
+            competitors: `
+                <h1 class="text-4xl font-bold text-gray-800 mb-8 border-b-4 border-primary-blue pb-3">海外競業資訊分析 (2025年市場影響力指數)</h1>
+                <div class="bg-white p-6 rounded-2xl shadow-xl overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th id="rank" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header">綜合排名 ${getSortIcon('rank')}</th>
+                                <th id="vendor" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header">廠商 ${getSortIcon('vendor')}</th>
+                                <th id="fame" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header">知名度 ${getSortIcon('fame')}</th>
+                                <th id="penetration" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sortable-header">海外滲透力 ${getSortIcon('penetration')}</th>
+                                <th id="slot" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider tracking-wider">最紅老虎機</th>
+                                <th id="region" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider tracking-wider">熱門區域</th>
+                            </tr>
+                        </thead>
+                        <tbody id="competitor-table-body" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-8 p-6 bg-yellow-50 rounded-2xl shadow-lg border-l-4 border-yellow-500">
+
+                    <h3 class="font-bold text-2xl text-yellow-800 mb-6">競品玩法</h3>
+
+                    <div class="grid md:grid-cols-3 gap-6">
+
+                        <div>
+                            <iframe class="w-full aspect-video rounded-xl shadow-xl"
+                                    src="https://www.youtube-nocookie.com/embed/jJxRh8XbmxU"
+                                    title="《PG》【麻將胡了2】: 消除乘倍、金牌轉百搭"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen>
+                            </iframe>
+                            <p class="mt-2 text-center text-sm font-medium text-gray-700">《PG》【麻將胡了2】: 消除乘倍、金牌轉百搭</p>
+                        </div>
+
+                        <div>
+                            <iframe class="w-full aspect-video rounded-xl shadow-xl"
+                                    src="https://www.youtube-nocookie.com/embed/z8E-5J4ETuk?start=55"
+                                    title="《JDB》 【Fortune Treasure】: Hold&Spin、倍率遞增"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen>
+                            </iframe>
+                            <p class="mt-2 text-center text-sm font-medium text-gray-700">《JDB》 【Fortune Treasure】: Hold&Spin、倍率遞增</p>
+                        </div>
+
+                        <div>
+                            <iframe class="w-full aspect-video rounded-xl shadow-xl"
+                                    src="https://www.youtube-nocookie.com/embed/3aXHVqL4U0A?start=1568"
+                                    title="《FA CHAI》 【Sugar Bang Bang 2】: 消除乘倍、金色+倍數轉百搭"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen>
+                            </iframe>
+                            <p class="mt-2 text-center text-sm font-medium text-gray-700">《FA CHAI》 【Sugar Bang Bang 2】: 消除乘倍、金色+倍數轉百搭</p>
+                        </div>
+
+                    </div>
+
+                    <p class="text-sm text-gray-500 mt-4 text-center"></p>
+
+                </div>
+            `,
+            conclusion: `
+                <div class="bg-white p-8 rounded-2xl shadow-2xl">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-6 border-b-4 border-primary-blue pb-3">總結</h1>
+                    <p class="text-xl text-gray-700 leading-relaxed mb-8">
+                        參考海外熱門 Slot 《麻將胡了》系列，未來可以同玩法的【超級王牌小丑版】為基礎，
+                        延伸開發「麻將主題」新作，結合高人氣題材與玩法，以提升市場競爭力。
+                    </p>
+                    
+                    <div class="mb-8 p-4 bg-secondary-gray rounded-xl shadow-inner">
+                        <img 
+                            src="${conclusionImageUrl}" 
+                            alt="超級王牌與麻將胡了概念圖" 
+                            class="w-full h-auto object-contain rounded-lg"
+                            onerror="this.onerror=null; this.src='https://placehold.co/800x200/CCCCCC/333333?text=主題組合概念圖載入失敗';"
+                        >
+                    </div>
+
+                    <button onclick="navigateTo('competitors')" class="mt-8 inline-block bg-green-500 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-green-600 transition duration-300">
+                        回顧競業資訊
+                    </button>
+                </div>
+            `
+        };
+        
+        // 取得排序圖標
+        function getSortIcon(key) {
+            if (key === sortKey) {
+                return sortAsc ? '▲' : '▼';
+            }
+            return '';
+        }
+
+        // 渲染表格
+        function renderCompetitorTable() {
+            const tbody = document.getElementById('competitor-table-body');
+            if (!tbody) return;
+
+            // 排序邏輯
+            const sortedData = [...competitorData].sort((a, b) => {
+                let aVal = a[sortKey];
+                let bVal = b[sortKey];
+                
+                // 處理數字和字串
+                if (typeof aVal === 'number' && typeof bVal === 'number') {
+                    return sortAsc ? aVal - bVal : bVal - aVal;
+                } else {
+                    aVal = String(aVal);
+                    bVal = String(bVal);
+                    return sortAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                }
+            });
+
+            tbody.innerHTML = sortedData.map((item, index) => `
+                <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.rank}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold">${item.vendor}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-500">${getRatingDisplay(item.fame)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-500">${getRatingDisplay(item.penetration)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.slot}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.region}</td>
+                </tr>
+            `).join('');
+
+            // 更新表頭圖標 (保留排序功能，但移除標頭上的提示文字)
+            document.querySelectorAll('.sortable-header').forEach(header => {
+                const key = header.id;
+                // 只更新圖標
+                header.innerHTML = `${header.textContent.split(' ')[0]} ${getSortIcon(key)}`;
+            });
+        }
+        
+        // 設置競業表格的點擊事件
+        function setupCompetitorTable() {
+            document.querySelectorAll('.sortable-header').forEach(header => {
+                // 先移除舊的監聽器，避免重複
+                const newHeader = header.cloneNode(true);
+                header.parentNode.replaceChild(newHeader, header);
+                
+                newHeader.addEventListener('click', function() {
+                    const newSortKey = this.id;
+                    if (newSortKey === sortKey) {
+                        sortAsc = !sortAsc;
+                    } else {
+                        sortKey = newSortKey;
+                        sortAsc = true; // 新的列預設升序
+                    }
+                    renderCompetitorTable();
+                    showMessage(`表格已根據「${this.textContent.split(' ')[0]}」${sortAsc ? '升序' : '降序'}排序。`);
+                });
+            });
+            renderCompetitorTable(); // 初始渲染
+        }
+
+
+        // 處理導航邏輯
+        function navigateTo(pageId) {
+            const pageContent = pages[pageId] || pages.home;
+            
+            // 替換內容並增加淡入效果
+            contentContainer.style.opacity = 0;
+            setTimeout(() => {
+                contentContainer.innerHTML = pageContent;
+                contentContainer.style.opacity = 1;
+
+                // 根據當前頁面附加特定的事件監聽器
+                if (pageId === 'competitors') {
+                    setupCompetitorTable();
+                }
+            }, 300); // 延遲以匹配 CSS 過渡
+
+            // 更新按鈕樣式
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.getAttribute('onclick').includes(`'${pageId}'`)) {
+                    btn.classList.add('bg-primary-blue', 'text-white', 'shadow-md');
+                    btn.classList.remove('text-gray-700', 'hover:bg-gray-100');
+                } else {
+                    btn.classList.remove('bg-primary-blue', 'text-white', 'shadow-md');
+                    btn.classList.add('text-gray-700', 'hover:bg-gray-100');
+                }
+            });
+            // 滾動到頂部 (為了單頁應用體驗)
+            window.scrollTo(0, 0);
+        }
+
+        // 初始化網站 (加載首頁)
+        window.onload = function() {
+            contentContainer.style.transition = 'opacity 0.3s ease-in-out';
+            navigateTo('home');
+        };
+    </script>
+</body>
+</html>
